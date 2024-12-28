@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡単 - Image Sharing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        header button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        header button:hover {
+            background-color: #45a049;
+        }
+        main {
+            padding: 20px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: calc(100% - 100px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+        .search-bar button {
+            width: 80px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        let images = [];
+
+        function toggleLanguage() {
+            const lang = document.documentElement.lang;
+            document.documentElement.lang = lang === 'ja' ? 'en' : 'ja';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const lang = document.documentElement.lang;
+            document.title = lang === 'ja' ? '簡単 - 画像共有' : 'Kantan - Image Sharing';
+            document.getElementById('header-title').textContent = lang === 'ja' ? '簡単' : 'Kantan';
+            document.getElementById('create-button').textContent = lang === 'ja' ? '+ 作成' : '+ Create';
+            document.getElementById('search-input').placeholder = lang === 'ja' ? '画像を検索' : 'Search images';
+            document.getElementById('search-button').textContent = lang === 'ja' ? '検索' : 'Search';
+        }
+
+        function addImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = () => {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        images.push({ src: reader.result, tags: '' });
+                        displayImages();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function displayImages() {
+            const gallery = document.querySelector('.gallery');
+            gallery.innerHTML = '';
+            images.forEach(img => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img.src;
+                gallery.appendChild(imgElement);
+            });
+        }
+
+        function searchImages() {
+            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const gallery = document.querySelector('.gallery');
+            gallery.innerHTML = '';
+            images.filter(img => img.tags.includes(keyword)).forEach(img => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img.src;
+                gallery.appendChild(imgElement);
+            });
+        }
+
+        window.onload = updateLanguage;
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1 id="header-title">簡単</h1>
+        <div>
+            <button id="create-button" onclick="addImage()">+ 作成</button>
+            <button onclick="toggleLanguage()">切替 / Switch</button>
+        </div>
+    </header>
+    <main>
+        <div class="search-bar">
+            <input id="search-input" type="text" placeholder="画像を検索">
+            <button id="search-button" onclick="searchImages()">検索</button>
+        </div>
+        <div class="gallery"></div>
+    </main>
+</body>
+
+</html>
